@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link href="./style.css" rel="stylesheet"/>
+    <title>Variation</title>
+</head>
+<body>
+
+<main>
+    <ul class="variations">
+        <li class="attributes" data-attribute_type="color" data-attribute_name="color">
+            Color:
+            <ul>
+                <li style="--color: red" data-attribute_value="red">Red</li>
+                <li style="--color: green" data-attribute_value="green">Green</li>
+                <li style="--color: blue" data-attribute_value="blue">Blue</li>
+            </ul>
+
+        </li>
+        <li class="attributes" data-attribute_type="button" data-attribute_name="size">
+            Size:
+            <ul>
+                <li data-attribute_value="100">100</li>
+                <li data-attribute_value="200">200</li>
+            </ul>
+        </li>
+<!--
+        <li class="attributes" data-attribute_type="button" data-attribute_name="type">
+            Type:
+            <ul>
+                <li data-attribute_value="still">still</li>
+                <li data-attribute_value="wood">wood</li>
+            </ul>
+        </li>
+-->
+    </ul>
+
+    <h1 id="price"></h1>
+</main>
+
+<script src="./script.js"></script>
+</body>
+</html>

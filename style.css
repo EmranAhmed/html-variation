@@ -1,0 +1,90 @@
+*, *::before, *::after {
+    box-sizing : border-box;
+    margin     : 0;
+    padding    : 0;
+    }
+
+img, svg {
+    max-width : 100%;
+    display   : block;
+    }
+
+.selected {
+    /*font-weight : bold;*/
+    }
+
+/*.disable {
+    text-decoration : line-through;
+    }*/
+
+main {
+    display       : grid;
+    width         : 50vw;
+    margin-inline : auto;
+    height        : 100vh;
+    }
+
+.variations {
+    display        : grid;
+    list-style     : none;
+    grid-auto-flow : row;
+    }
+
+.variations > li {
+
+    }
+
+
+.attributes {
+    display               : grid;
+    grid-template-columns : 80px auto;
+    align-items           : center;
+    }
+
+.attributes > ul {
+    display    : flex;
+    list-style : none;
+    gap        : 10px;
+    }
+
+.attributes > ul > li {
+    cursor      : pointer;
+    user-select : none;
+
+    }
+
+.attributes[data-attribute_type="color"] > ul > li {
+    background-color : var(--color);
+    color            : var(--color);
+    padding          : 5px;
+    border-radius    : 50%;
+    width            : 30px;
+    aspect-ratio     : 1;
+    display          : grid;
+    place-items      : center;
+    overflow         : hidden;
+    }
+
+
+.attributes[data-attribute_type="button"] > ul > li {
+    padding       : 5px;
+    border-radius : 2px;
+    outline       : 1px solid black;
+    width         : fit-content;
+    border        : 2px solid transparent;
+    display       : grid;
+    place-items   : center;
+    overflow      : hidden;
+    }
+
+
+.attributes > ul > li.selected {
+    border  : 2px solid white;
+    outline : 3px solid black;
+    }
+
+.attributes > ul > li.disable {
+    border  : 2px solid white;
+    outline : 2px solid #D7D7D7;
+    opacity: 0.5;
+    }
