@@ -30,38 +30,44 @@ const variations = [
 
     {attributes : {color : 'red', size : '200'}, price : '40.00'},
 
-    {attributes : {color : 'green', size : '100'}, price : '56.00'},
+    // {attributes : {color : 'green', size : ''}, price : '56.00'},
 
-    // {attribute : {color : 'green', size : 200}, price : '67.00'},
+     {attributes : {color : 'green', size : '200'}, price : '67.00'},
 
     {attributes : {color : 'blue', size : '100'}, price : '89.00'},
 
-    {attributes : {color : 'blue', size : '200'}, price : '12.00'},
+    //{attributes : {color : 'blue', size : '200'}, price : '12.00'},
 ];
 
-function findMatchingVariation(variations, choosen) {
+
+function isVariationMatched(currentVariation, attributeValue, chosenValue){
+    return attributeValue === chosenValue || '' === attributeValue
+}
+
+function isAttributeMatched(attributeValue, chosenValue){
+    return attributeValue === chosenValue || '' === attributeValue
+}
+
+function findMatchingVariation(variations, chosen) {
 
     return variations.filter((currentVariation) => {
-        return Object.keys(choosen).every((key) => {
-
-            // isMatched
-            return currentVariation.attributes[key] === choosen[key]
-        })
+        // return currentVariation.attributes[key] === chosen[key] || '' === currentVariation.attributes[key]
+        return Object.keys(chosen).every((key) => isVariationMatched(currentVariation, currentVariation.attributes[key], chosen[key]))
     })
 }
 
-function findMaybeAvailableAttribute(variations, choosen) {
+function findMaybeAvailableAttribute(variations, chosen) {
 
     const matchedVariations = variations.filter((currentVariation) => {
-        return Object.keys(choosen).some((key) => {
-            return currentVariation.attributes[key] === choosen[key]
-        })
+        // return currentVariation.attributes[key] === chosen[key] || '' === currentVariation.attributes[key]
+        return Object.keys(chosen).some((key) => isAttributeMatched(currentVariation.attributes[key], chosen[key]))
     })
 
     return matchedVariations.reduce((available, maybeVariation) => {
 
         for (const [key, value] of Object.entries(maybeVariation.attributes)) {
-            if (!Object.keys(choosen).includes(key)) {
+
+            if (!Object.keys(chosen).includes(key)) {
 
                 if (typeof available[key] === 'undefined') {
                     available[key] = []
@@ -77,7 +83,7 @@ function findMaybeAvailableAttribute(variations, choosen) {
     }, {})
 }
 
-function getChoosenAttributes() {
+function getChosenAttributes() {
 
     let data = {
         totalAttributeCount    : 0,
@@ -120,9 +126,11 @@ document.querySelectorAll('[data-attribute_value]').forEach((item, index) => {
 
         //
 
-        const choosen = getChoosenAttributes()
+        const choosen = getChosenAttributes()
 
         const availables = findMaybeAvailableAttribute(variations, {[attribute_name] : attribute_value})
+
+       // console.log(availables)
 
         for (const [key, values] of Object.entries(availables)) {
             document.querySelectorAll(`[data-attribute_name="${key}"] [data-attribute_value]`).forEach((attribute) => {
@@ -130,6 +138,10 @@ document.querySelectorAll('[data-attribute_value]').forEach((item, index) => {
                 const value = attribute.dataset.attribute_value
 
                 attribute.classList.remove('disable')
+
+               if( values[0] === '' ) {
+                  return;
+               }
 
                 if (!values.includes(value)) {
                     attribute.classList.remove('selected')
@@ -140,6 +152,7 @@ document.querySelectorAll('[data-attribute_value]').forEach((item, index) => {
         }
 
         document.querySelector('#price').innerText = ''
+
         if (choosen.totalAttributeCount === choosen.selectedAttributeCount) {
             const variation = findMatchingVariation(variations, choosen.selectedAttributes)
 
