@@ -8,7 +8,6 @@
  *
  * */
 
-
 /*const variations = [
     {attributes : {color : 'red', size : '100', type : 'still'}, price : '$34.00'},
 
@@ -26,142 +25,134 @@
 ];*/
 
 const variations = [
-    {attributes : {color : 'red', size : '100'}, price : '34.00'},
+  { attributes: { color: 'red', size: '100' }, price: '34.00' },
 
-    {attributes : {color : 'red', size : '200'}, price : '40.00'},
+  { attributes: { color: 'red', size: '200' }, price: '40.00' },
 
-    // {attributes : {color : 'green', size : ''}, price : '56.00'},
+  // {attributes : {color : 'green', size : ''}, price : '56.00'},
 
-     {attributes : {color : 'green', size : '200'}, price : '67.00'},
+  { attributes: { color: 'green', size: '200' }, price: '67.00' },
 
-    {attributes : {color : 'blue', size : '100'}, price : '89.00'},
+  { attributes: { color: 'blue', size: '100' }, price: '89.00' },
 
-    //{attributes : {color : 'blue', size : '200'}, price : '12.00'},
-];
+  //{attributes : {color : 'blue', size : '200'}, price : '12.00'},
+]
 
-
-function isVariationMatched(currentVariation, attributeValue, chosenValue){
-    return attributeValue === chosenValue || '' === attributeValue
+function isAttributeMatched (attributeValue, chosenValue) {
+  return attributeValue === chosenValue || '' === attributeValue
 }
 
-function isAttributeMatched(attributeValue, chosenValue){
-    return attributeValue === chosenValue || '' === attributeValue
+function findMatchingVariation (variations, chosen) {
+
+  return variations.filter((currentVariation) => {
+    return Object.keys(chosen).every((key) => isAttributeMatched( currentVariation.attributes[key], chosen[key]))
+  })
 }
 
-function findMatchingVariation(variations, chosen) {
+function findMaybeAvailableAttribute (variations, chosen) {
 
-    return variations.filter((currentVariation) => {
-        // return currentVariation.attributes[key] === chosen[key] || '' === currentVariation.attributes[key]
-        return Object.keys(chosen).every((key) => isVariationMatched(currentVariation, currentVariation.attributes[key], chosen[key]))
-    })
-}
+  const matchedVariations = variations.filter((currentVariation) => {
+    return Object.keys(chosen).some((key) => isAttributeMatched(currentVariation.attributes[key], chosen[key]))
+  })
 
-function findMaybeAvailableAttribute(variations, chosen) {
+  return matchedVariations.reduce((available, maybeVariation) => {
 
-    const matchedVariations = variations.filter((currentVariation) => {
-        // return currentVariation.attributes[key] === chosen[key] || '' === currentVariation.attributes[key]
-        return Object.keys(chosen).some((key) => isAttributeMatched(currentVariation.attributes[key], chosen[key]))
-    })
+    for (const [key, value] of Object.entries(maybeVariation.attributes)) {
 
-    return matchedVariations.reduce((available, maybeVariation) => {
+      if (!Object.keys(chosen).includes(key)) {
 
-        for (const [key, value] of Object.entries(maybeVariation.attributes)) {
-
-            if (!Object.keys(chosen).includes(key)) {
-
-                if (typeof available[key] === 'undefined') {
-                    available[key] = []
-                }
-
-                available[key].push(value)
-
-            }
+        if (typeof available[key] === 'undefined') {
+          available[key] = []
         }
 
-        return available
+        available[key].push(value)
 
-    }, {})
-}
-
-function getChosenAttributes() {
-
-    let data = {
-        totalAttributeCount    : 0,
-        selectedAttributeCount : 0,
-        selectedAttributes     : {}
+      }
     }
 
-    document.querySelectorAll('[data-attribute_name]').forEach((attribute) => {
+    return available
 
-        const name = attribute.dataset.attribute_name
-        data.totalAttributeCount++
+  }, {})
+}
 
-        attribute.querySelectorAll('[data-attribute_value]').forEach((item) => {
+function getChosenAttributes () {
 
-            if (item.classList.contains('selected')) {
-                const value = item.dataset.attribute_value
-                data.selectedAttributeCount++
-                data.selectedAttributes[name] = value
-            }
+  let data = {
+    totalAttributeCount: 0,
+    selectedAttributeCount: 0,
+    selectedAttributes: {},
+  }
 
-        })
+  document.querySelectorAll('[data-attribute_name]').forEach((attribute) => {
+
+    const name = attribute.dataset.attribute_name
+    data.totalAttributeCount++
+
+    attribute.querySelectorAll('[data-attribute_value]').forEach((item) => {
+
+      if (item.classList.contains('selected')) {
+        const value = item.dataset.attribute_value
+        data.selectedAttributeCount++
+        data.selectedAttributes[name] = value
+      }
     })
+  })
 
-    return data
+  return data
 
 }
 
 document.querySelectorAll('[data-attribute_value]').forEach((item, index) => {
 
-    item.addEventListener('click', (event) => {
-        const element = event.target
+  item.addEventListener('click', (event) => {
+    const element = event.target
 
-        const attribute_name  = element.closest('.attributes').dataset['attribute_name']
-        const attribute_value = element.dataset['attribute_value']
+    const attribute_name = element.closest('.attributes').dataset['attribute_name']
+    const attribute_value = element.dataset['attribute_value']
 
-        element.closest('.attributes').querySelectorAll('li').forEach((li) => { li.classList.remove('selected') })
+    element.closest('.attributes').querySelectorAll('li').forEach((li) => { li.classList.remove('selected') })
 
-        element.classList.add('selected')
-        element.classList.remove('disable')
+    element.classList.add('selected')
+    element.classList.remove('disable')
 
-        //
+    //
 
-        const choosen = getChosenAttributes()
+    const choosen = getChosenAttributes()
 
-        const availables = findMaybeAvailableAttribute(variations, {[attribute_name] : attribute_value})
+    const availables = findMaybeAvailableAttribute(variations, { [attribute_name]: attribute_value })
 
-       // console.log(availables)
+    // console.log(availables)
 
-        for (const [key, values] of Object.entries(availables)) {
-            document.querySelectorAll(`[data-attribute_name="${key}"] [data-attribute_value]`).forEach((attribute) => {
+    for (const [key, values] of Object.entries(availables)) {
+      document.querySelectorAll(`[data-attribute_name="${key}"] [data-attribute_value]`).forEach((attribute) => {
 
-                const value = attribute.dataset.attribute_value
+        const value = attribute.dataset.attribute_value
 
-                attribute.classList.remove('disable')
+        attribute.classList.remove('disable')
 
-               if( values[0] === '' ) {
-                  return;
-               }
-
-                if (!values.includes(value)) {
-                    attribute.classList.remove('selected')
-                    attribute.classList.add('disable')
-                }
-
-            })
+        if (values[0] === '') {
+          return
         }
 
-        document.querySelector('#price').innerText = ''
-
-        if (choosen.totalAttributeCount === choosen.selectedAttributeCount) {
-            const variation = findMatchingVariation(variations, choosen.selectedAttributes)
-
-            if (variation.length > 0) {
-                document.querySelector('#price').innerText = variation.shift().price
-            }
-
+        if (!values.includes(value)) {
+          attribute.classList.remove('selected')
+          attribute.classList.add('disable')
         }
-    })
+
+      })
+    }
+
+    document.querySelector('#price').innerText = ''
+
+    if (choosen.totalAttributeCount === choosen.selectedAttributeCount) {
+      const variation = findMatchingVariation(variations, choosen.selectedAttributes)
+
+      if (variation.length > 0) {
+        document.querySelector('#price').innerText = variation.shift().price
+      }
+
+    }
+  }, { passive: true })
 
 })
 
