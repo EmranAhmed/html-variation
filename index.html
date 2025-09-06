@@ -11,7 +11,7 @@
 <main>
     <ul class="variations">
         <li class="attributes" data-attribute_type="color" data-attribute_name="color">
-            Color:
+            Color: <span class="selected-value"></span>
             <ul>
                 <li style="--color: red" data-attribute_value="red">Red</li>
                 <li style="--color: green" data-attribute_value="green">Green</li>
@@ -20,7 +20,7 @@
 
         </li>
         <li class="attributes" data-attribute_type="button" data-attribute_name="size">
-            Size:
+            Size: <span class="selected-value"></span>
             <ul>
                 <li data-attribute_value="100">100</li>
                 <li data-attribute_value="200">200</li>
@@ -37,7 +37,8 @@
 -->
     </ul>
 
-    <h1 id="price"></h1>
+    <div id="price"></div>
+    <div id="stock"></div>
 </main>
 
 <script src="./script.js"></script>

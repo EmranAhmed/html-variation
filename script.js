@@ -25,17 +25,19 @@
 ];*/
 
 const variations = [
-  { attributes: { color: 'red', size: '100' }, price: '34.00' },
+  { attributes: { color: 'red', size: '100' }, price: '34.00', is_in_stock: true, in_stock: 10, variation_is_active: true, availability_html: '' },
 
-  { attributes: { color: 'red', size: '200' }, price: '40.00' },
+  { attributes: { color: 'red', size: '200' }, price: '40.00', is_in_stock: true, in_stock: 20, variation_is_active: true, availability_html: '' },
 
-  // {attributes : {color : 'green', size : ''}, price : '56.00'},
+  { attributes: { color: 'green', size: '100' }, price: '56.00', is_in_stock: false, in_stock: 0, variation_is_active: true, availability_html: 'Out of stock' },
 
-  { attributes: { color: 'green', size: '200' }, price: '67.00' },
+  { attributes: { color: 'green', size: '200' }, price: '67.00', is_in_stock: true, in_stock: 34, variation_is_active: true, availability_html: '' },
 
-  { attributes: { color: 'blue', size: '100' }, price: '89.00' },
+//  { attributes: { color: 'blue', size: '100' }, price: '18.00', is_in_stock: true, in_stock: 45, variation_is_active: true, availability_html: '' },
 
-  //{attributes : {color : 'blue', size : '200'}, price : '12.00'},
+//  { attributes: { color: 'blue', size: '200' }, price: '12.00', is_in_stock: true, in_stock: 55, variation_is_active: false, availability_html: '' },
+
+  { attributes: { color: 'blue', size: '' }, price: '12.00', is_in_stock: true, in_stock: 55, variation_is_active: true, availability_html: '' },
 ]
 
 function isAttributeMatched (attributeValue, chosenValue) {
@@ -45,27 +47,37 @@ function isAttributeMatched (attributeValue, chosenValue) {
 function findMatchingVariation (variations, chosen) {
 
   return variations.filter((currentVariation) => {
-    return Object.keys(chosen).every((key) => isAttributeMatched( currentVariation.attributes[key], chosen[key]))
+    return Object.keys(chosen).every((key) => currentVariation.variation_is_active && isAttributeMatched(currentVariation.attributes[key], chosen[key]))
   })
 }
 
 function findMaybeAvailableAttribute (variations, chosen) {
 
   const matchedVariations = variations.filter((currentVariation) => {
-    return Object.keys(chosen).some((key) => isAttributeMatched(currentVariation.attributes[key], chosen[key]))
+    return Object.keys(chosen).some((key) => currentVariation.variation_is_active && isAttributeMatched(currentVariation.attributes[key], chosen[key]))
   })
 
   return matchedVariations.reduce((available, maybeVariation) => {
 
     for (const [key, value] of Object.entries(maybeVariation.attributes)) {
 
+      //     console.log(maybeVariation.variation_is_active, key)
+
       if (!Object.keys(chosen).includes(key)) {
 
         if (typeof available[key] === 'undefined') {
-          available[key] = []
+          //available[key] = []
+          available[key] = {}
         }
 
-        available[key].push(value)
+        /* available[key].push({
+           value,
+           is_in_stock: maybeVariation.is_in_stock,
+         })*/
+        available[key][value] = {
+          is_in_stock: maybeVariation.is_in_stock,
+          stock_quantity: maybeVariation.in_stock,
+        }
 
       }
     }
@@ -102,6 +114,8 @@ function getChosenAttributes () {
 
 }
 
+// 1. Get chosen attributes
+
 document.querySelectorAll('[data-attribute_value]').forEach((item, index) => {
 
   item.addEventListener('click', (event) => {
@@ -110,45 +124,54 @@ document.querySelectorAll('[data-attribute_value]').forEach((item, index) => {
     const attribute_name = element.closest('.attributes').dataset['attribute_name']
     const attribute_value = element.dataset['attribute_value']
 
-    element.closest('.attributes').querySelectorAll('li').forEach((li) => { li.classList.remove('selected') })
+    element.closest('.attributes').querySelectorAll('li').forEach((li) => { li.classList.remove('selected', 'out-of-stock', 'disable') })
+    element.closest('.attributes').querySelector('.selected-value').innerText = attribute_value
 
     element.classList.add('selected')
-    element.classList.remove('disable')
-
-    //
+    element.classList.remove('disable', 'out-of-stock')
 
     const choosen = getChosenAttributes()
 
     const availables = findMaybeAvailableAttribute(variations, { [attribute_name]: attribute_value })
 
-    // console.log(availables)
-
     for (const [key, values] of Object.entries(availables)) {
       document.querySelectorAll(`[data-attribute_name="${key}"] [data-attribute_value]`).forEach((attribute) => {
 
-        const value = attribute.dataset.attribute_value
+        const attribute_value = attribute.dataset.attribute_value
 
-        attribute.classList.remove('disable')
+        attribute.classList.remove('disable', 'out-of-stock')
 
-        if (values[0] === '') {
+        const availableValues = Object.keys(values)
+
+        // Any Value
+        if (availableValues[0] === '') {
           return
         }
 
-        if (!values.includes(value)) {
-          attribute.classList.remove('selected')
+        if (!availableValues.includes(attribute_value)) {
+          attribute.classList.remove('selected', 'out-of-stock')
           attribute.classList.add('disable')
+          attribute.closest('.attributes').querySelector('.selected-value').innerText = ''
+        }
+
+        if (values[attribute_value] && values[attribute_value].is_in_stock === false && choosen.totalAttributeCount > choosen.selectedAttributeCount) {
+          attribute.classList.remove('disable')
+          attribute.classList.add('out-of-stock')
         }
 
       })
     }
 
     document.querySelector('#price').innerText = ''
+    document.querySelector('#stock').innerText = ''
 
     if (choosen.totalAttributeCount === choosen.selectedAttributeCount) {
-      const variation = findMatchingVariation(variations, choosen.selectedAttributes)
+      const availableVariations = findMatchingVariation(variations, choosen.selectedAttributes)
 
-      if (variation.length > 0) {
-        document.querySelector('#price').innerText = variation.shift().price
+      if (availableVariations.length > 0) {
+        const variation = availableVariations.shift()
+        document.querySelector('#price').innerText = variation.price
+        document.querySelector('#stock').innerText = variation.availability_html
       }
 
     }

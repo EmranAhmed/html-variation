@@ -79,12 +79,15 @@ main {
 
 
 .attributes > ul > li.selected {
-    border  : 2px solid white;
-    outline : 3px solid black;
+    outline : 2px solid black;
     }
 
 .attributes > ul > li.disable {
-    border  : 2px solid white;
     outline : 2px solid #D7D7D7;
     opacity: 0.5;
+    }
+
+.attributes > ul > li.out-of-stock {
+    outline : 2px dotted black;
+    opacity: 0.8;
     }
