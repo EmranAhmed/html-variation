@@ -10,35 +10,36 @@
 
 <main>
     <ul class="variations">
-        <li class="attributes" data-attribute_type="color" data-attribute_name="color">
-            Color: <span class="selected-value"></span>
+        <li class="attributes" data-attribute_type="button" data-attribute_name="attribute_pa_images">
+            <div class="label"> Images: <span class="selected-value"></span></div>
             <ul>
-                <li style="--color: red" data-attribute_value="red">Red</li>
-                <li style="--color: green" data-attribute_value="green">Green</li>
-                <li style="--color: blue" data-attribute_value="blue">Blue</li>
+                <li  data-attribute_value="belt">Belt</li>
+                <li  data-attribute_value="cap">Cap</li>
+                <li  data-attribute_value="glass">Glass</li>
             </ul>
 
         </li>
-        <li class="attributes" data-attribute_type="button" data-attribute_name="size">
-            Size: <span class="selected-value"></span>
+        <li class="attributes" data-attribute_type="color" data-attribute_name="attribute_pa_color">
+            <div class="label">Color: <span class="selected-value"></span></div>
             <ul>
-                <li data-attribute_value="100">100</li>
-                <li data-attribute_value="200">200</li>
+                <li style="--color: blue" data-attribute_value="blue">Blue</li>
+                <li  style="--color: green" data-attribute_value="green">Green</li>
+                <li  style="--color: red" data-attribute_value="red">Red</li>
             </ul>
         </li>
-<!--
-        <li class="attributes" data-attribute_type="button" data-attribute_name="type">
-            Type:
+        <li class="attributes" data-attribute_type="button" data-attribute_name="attribute_pa_sizes">
+            <div class="label"> Sizes: <span class="selected-value"></span></div>
             <ul>
-                <li data-attribute_value="still">still</li>
-                <li data-attribute_value="wood">wood</li>
+                <li data-attribute_value="large">Large</li>
+                <li data-attribute_value="medium">Medium</li>
+                <li data-attribute_value="small">Small</li>
             </ul>
         </li>
--->
     </ul>
 
     <div id="price"></div>
     <div id="stock"></div>
+    <a id="clear-button" href="#">Clear</a>
 </main>
 
 <script src="./script.js"></script>
